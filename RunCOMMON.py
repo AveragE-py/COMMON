@@ -11,7 +11,7 @@ except ImportError:
     import select
     WINDOWS = False
 
-ALLOWED_SYMBOLS = ["⬜", "⬛", "🟥", "🟧", "🟨", "🟩", "🟦", "🟪", "🟫"]
+ALLOWED_SYMBOLS = ["⬜", "⬛", "🟥", "🟧", "🟨", "🟩", "🟦", "🟪", "🟫", "🔴", "🟠", "🟡", "🟢", "🔵", "🟣", "🟤", "⚫", "⚪", "▫", "▪","◽", "◾"]
 
 
 class BASE:
