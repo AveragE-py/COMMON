@@ -1,0 +1,156 @@
+IF init != 1
+    MAKE(init, 1)
+    MAKE(dr, 0)
+    MAKE(dc, 1)
+    MAKE(alive, 1)
+    MAKE(score, 0)
+    MAKE(grew, 0)
+    
+    MAKE(hrow, 12)
+    MAKE(hcol, 11)
+    ARRAY(brows, 0)
+    ARRAY(bcols, 0)
+    APUSH(brows, 12)
+    APUSH(bcols, 9)
+    APUSH(brows, 12)
+    APUSH(bcols, 10)
+    APUSH(brows, 12)
+    APUSH(bcols, 11)
+    
+    MAKE(frow, 4)
+    MAKE(fcol, 4)
+    MAKE(fbyte, 105)
+    
+    SET(310, 🟧)
+    SET(311, 🟧)
+    SET(312, 🟥) 
+    SET(105, 🟩)
+    
+    TOOLTIP(Snake  |  WASD or arrows)
+    PROCESS()
+ENDIF
+
+KEY up
+    IF dr == 0
+        MAKE(dr, -1)
+        MAKE(dc, 0)
+    ENDIF
+ENDKEY
+KEY down
+    IF dr == 0
+        MAKE(dr, 1)
+        MAKE(dc, 0)
+    ENDIF
+ENDKEY
+KEY left
+    IF dc == 0
+        MAKE(dr, 0)
+        MAKE(dc, -1)
+    ENDIF
+ENDKEY
+KEY right
+    IF dc == 0
+        MAKE(dr, 0)
+        MAKE(dc, 1)
+    ENDIF
+ENDKEY
+
+IF alive == 1
+    FRAMES 6
+        MAKE(nrow, hrow)
+        VARMATH(nrow, adding, dr)
+        MAKE(ncol, hcol)
+        VARMATH(ncol, adding, dc)
+        
+        IF nrow < 0
+            MAKE(alive, 0)
+        ENDIF
+        IF nrow > 24
+            MAKE(alive, 0)
+        ENDIF
+        IF ncol < 0
+            MAKE(alive, 0)
+        ENDIF
+        IF ncol > 24
+            MAKE(alive, 0)
+        ENDIF
+        
+        IF alive == 1
+            MAKE(newbyte, nrow)
+            VARMATH(newbyte, multiplying, 25)
+            VARMATH(newbyte, adding, ncol)
+            VARMATH(newbyte, adding, 1)
+            
+            ALEN(brows, body_len)
+            MAKE(idx, 0)
+            
+            FOR body_len
+                AGET(brows, idx, brow_seg)
+                AGET(bcols, idx, bcol_seg)
+                
+                MAKE(seg_byte, brow_seg)
+                VARMATH(seg_byte, multiplying, 25)
+                VARMATH(seg_byte, adding, bcol_seg)
+                VARMATH(seg_byte, adding, 1)
+                
+                IF newbyte == seg_byte
+                    MAKE(alive, 0)
+                ENDIF
+                
+                VARMATH(idx, adding, 1)
+            ENDFOR
+        ENDIF
+        
+        IF alive == 1
+            MAKE(grew, 0)
+            
+            IF newbyte == fbyte
+                MAKE(grew, 1)
+                VARMATH(score, adding, 1)
+                
+                VARMATH(fbyte, adding, 157)
+                IF fbyte > 625
+                    VARMATH(fbyte, subtracting, 625)
+                ENDIF
+                
+                TOOLTIP(score)
+            ENDIF
+            
+            IF grew == 0
+                AGET(brows, 0, trow)
+                AGET(bcols, 0, tcol)
+                MAKE(tbyte, trow)
+                VARMATH(tbyte, multiplying, 25)
+                VARMATH(tbyte, adding, tcol)
+                VARMATH(tbyte, adding, 1)
+                SET(tbyte, ⬜)
+                APOP(brows)
+                APOP(bcols)
+            ENDIF
+            
+            ALEN(brows, blen)
+            MAKE(lastidx, blen)
+            VARMATH(lastidx, subtracting, 1)
+            AGET(brows, lastidx, oldhr)
+            AGET(bcols, lastidx, oldhc)
+            MAKE(oldhbyte, oldhr)
+            VARMATH(oldhbyte, multiplying, 25)
+            VARMATH(oldhbyte, adding, oldhc)
+            VARMATH(oldhbyte, adding, 1)
+            SET(oldhbyte, 🟧)
+            
+            APUSH(brows, nrow)
+            APUSH(bcols, ncol)
+            SET(newbyte, 🟥)
+            MAKE(hrow, nrow)
+            MAKE(hcol, ncol)
+            SET(fbyte, 🟩)
+            PROCESS()
+        ENDIF
+        
+        IF alive == 0
+            TOOLTIP(GAME OVER)
+            PROCESS()
+        ENDIF
+    ENDFRAMES
+ENDIF
